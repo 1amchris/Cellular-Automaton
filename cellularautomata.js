@@ -4,7 +4,7 @@ const WIDTH = canvas.width;
 const HEIGHT = canvas.height;
 const PIXEL_SIZE = 20;
 const BIRTH_PROB = 0.2;
-const FRAMERATE = 2;
+const FRAMERATE = 4;
 
 const UNDERPOPULATED = 1;
 const OVERPOPULATED = 4;
@@ -148,22 +148,22 @@ function update() {
     }
 
     const newCells = [];
-    let anyCellAlive = false;
+    let anyNewCellAlive = false;
     CELLS.forEach(col => {
         const newCol = [];
         col.forEach(cell => {
             const count = countCellsAround(cell.x, cell.y);
-            if (cell.isLive) {
-                newCol.push((count <= UNDERPOPULATED || OVERPOPULATED <= count) ? cell.kill() : cell);
-            } else {
-                newCol.push((count === REPRODUCTION) ? cell.birth() : cell);
-            }
-            if (cell.isLive && !anyCellAlive) anyCellAlive = true;
+            const newCell = new Cell(cell.x, cell.y);
+                newCol.push(
+                    cell.isLive
+                    ? ((count <= UNDERPOPULATED || OVERPOPULATED <= count) ? newCell.kill() : newCell.birth())
+                    : ((count === REPRODUCTION) ? newCell.birth() : newCell.kill()))
+            if (newCell.isLive && !anyNewCellAlive) anyNewCellAlive = true;
         });
         newCells.push(newCol);
     });
     CELLS = newCells;
-    return anyCellAlive;
+    return anyNewCellAlive;
 }
 
 function draw() {
